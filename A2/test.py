@@ -4,7 +4,7 @@ import numpy as np
 import random
 import sys
 
-from utils import utils
+from . import utils
 
 
 def train(x_train, y_train, x_test, y_test, epochs=85, batch_size=128, a=0.0001, prox_const=0.00001):
