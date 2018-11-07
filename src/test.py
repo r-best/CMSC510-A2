@@ -59,10 +59,10 @@ def predict(w, b, test):
     for item in test:
         item = np.atleast_2d(item)
         u = np.matmul(item,w) + b
-        prob = int(1.0 / (1.0 + np.exp(np.negative(u))))
-        if prob == 0:
-            prob = -1
-        labels.append(prob)
+        if u < 0:
+            labels.append(-1)
+        elif u > 0:
+            labels.append(1)
     return labels
 
 def main(argv):
