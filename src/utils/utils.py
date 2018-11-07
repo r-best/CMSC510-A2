@@ -72,53 +72,6 @@ def preprocess(X, Y, C0, C1):
     return X, Y.reshape(len(Y), 1)
 
 
-def featureSelection(train, test, targetSize=50):
-    """Takes in an array of training data and an array of testing data,
-    reduces their feature size down to targetSize by removing the features
-    that occur the least often in the training set
-
-    Arguments:
-        train: array-like (2D)
-            Array of training samples, each sample being an array of features
-        test: array-like (2D)
-            Array of test samples, same format as train
-        targetSize: int
-            Target number of features, default 50
-    
-    Returns:
-        Train and test reduced to targetSize features
-    """
-    numFeatures = len(train[0])
-
-    # If nothing to remove, we're done
-    if numFeatures <= targetSize:
-        return train, test
-    
-    train = np.transpose(train)
-
-    # Sum number of times each feature occurs across training set
-    featureCounts = []
-    for feature in train:
-        featureCounts.append(sum([0 if x == 0 else 1 for x in feature]))
-
-    # Obtain the targetSize (50) most occurring features
-    maxIndexes = []
-    while targetSize > 0:
-        max = 0
-        for i, _ in enumerate(featureCounts):
-            if featureCounts[i] > featureCounts[max]:
-                max = i
-        maxIndexes.append(max)
-        featureCounts[max] = -1
-        targetSize -= 1
-
-    # Filter train and test sets down to just the target features
-    train = [_ for i, _ in enumerate(train) if i in maxIndexes]
-    test = [[_ for i, _ in enumerate(sample) if i in maxIndexes] for sample in test]
-
-    return np.array(train).T, np.array(test)
-
-
 def evaluate(labels, gold):
     """Takes in an array of predicted labels and the corresponding
     gold standard and calculates precision, recall, and accuracy.
@@ -157,3 +110,5 @@ def evaluate(labels, gold):
     print("Class 1 Recall: {:.3f}".format(recall[1]))
     print("Class 1 F-Measure: {:.3f}".format(fscore[1]))
     print("Accuracy: {}/{} = {:.3f}%".format(correct, len(gold), correct/len(gold)*100))
+
+    # print("{:.0f}".format(correct/len(gold)*100000))
