@@ -97,4 +97,4 @@ def main(argv):
     utils.evaluate(labels, y_test)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv)
