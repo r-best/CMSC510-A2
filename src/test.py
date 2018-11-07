@@ -1,6 +1,7 @@
 from keras.datasets import mnist
 import tensorflow as tf
 import numpy as np
+import random
 import sys
 
 from utils import utils
@@ -82,11 +83,13 @@ def main(argv):
     print("Preprocessing testing set...")
     x_test, y_test = utils.preprocess(x_test, y_test, C0, C1)
 
-    x_test = x_test[:int(len(x_test)/3)]
-    y_test = y_test[:int(len(y_test)/3)]
+    # Sample training set
+    sampleIndicies = random.sample(range(len(x_train)), int(len(x_train)*sampleSize))
+    x_train_sample = np.array([_ for i, _ in enumerate(x_train) if i in sampleIndicies])
+    y_train_sample = np.array([_ for i, _ in enumerate(y_train) if i in sampleIndicies])
 
     print("Training model...")
-    w, b = train(x_train, y_train, x_test, y_test)
+    w, b = train(x_train_sample, y_train_sample, x_test, y_test)
 
     print("Evaluating model...")
     labels = predict(w, b, x_test)
