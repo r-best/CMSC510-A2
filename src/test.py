@@ -15,9 +15,9 @@ from utils import utils
     
 
 
-def train(x_train, y_train, x_test, y_test, epochs=75, batch_size=128, a=0.0001):
+def train(x_train, y_train, x_test, y_test, epochs=85, batch_size=128, a=0.0001):
     n_samples, n_features = x_train.shape
-    print(x_train.shape, y_train.shape)
+    # print(x_train.shape, y_train.shape)
     # y_train = np.reshape(y_train, (len(y_train), 1))
     # y_train = np.atleast_2d(y_train)
     
@@ -52,11 +52,22 @@ def train(x_train, y_train, x_test, y_test, epochs=75, batch_size=128, a=0.0001)
             # training done in this epoch
             # but, just so that the user can monitor progress, try current w,b on full test set
             y_pred,curr_w,curr_b=sess.run([predictions,w,b],feed_dict={x: x_test, y: y_test})
-            MSE=np.mean(np.mean(np.square(y_pred-y_test),axis=1),axis=0)
-            print(MSE)
+            MSE1=np.mean(np.mean(np.square(y_pred-y_test),axis=1),axis=0)
 
-            # new_w = np.maximum(curr_w, 0)
-            # sess.run(tf.assign(w, new_w))
+            prox_const = 0.00001
+            for i in range(len(curr_w)):
+                if curr_w[i][0] < prox_const*-1:
+                    curr_w[i][0] += prox_const
+                elif curr_w[i][0] > prox_const:
+                    curr_w[i][0] -= prox_const
+                else:
+                    curr_w[i][0] = 0
+            sess.run([tf.assign(w, curr_w)])
+
+            y_pred,_,_=sess.run([predictions,w,b],feed_dict={x: x_test, y: y_test})
+            MSE2=np.mean(np.mean(np.square(y_pred-y_test),axis=1),axis=0)
+
+            print("{:.2f}   {:.2f}".format(MSE1, MSE2))
 
     # print(np.transpose(curr_w))
     # print(curr_b)
