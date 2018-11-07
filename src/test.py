@@ -56,15 +56,14 @@ def train(x_train, y_train, x_test, y_test, epochs=85, batch_size=128, a=0.0001,
 
 
 def predict(w, b, test):
-    labels = list()
     for item in test:
         item = np.atleast_2d(item)
         u = np.matmul(item,w) + b
         if u < 0:
-            labels.append(-1)
+            yield -1
         elif u > 0:
-            labels.append(1)
-    return labels
+            yield 1
+
 
 def main(argv):
     C0 = 0
