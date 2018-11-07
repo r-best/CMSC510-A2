@@ -51,9 +51,9 @@ def preprocess(X, Y, C0, C1):
             The label of class 1
     
     Returns:
-        X: ndarray
+        X: ndarray (samplesxfeatures)
             The preprocessed sample set as a NumPy array
-        Y: ndarray
+        Y: ndarray (featuresx1)
             The preprocessed label set as a NumPy array
     """
     # Filter the datasets down to just the required classes
@@ -66,10 +66,10 @@ def preprocess(X, Y, C0, C1):
     # Normalize sample values to be between 0 and 1
     # X = [[x/256 for x in sample] for sample in X] # REMOVED, was tanking accuracy
     
-    # Normalize class labels to be 0 and 1
-    Y = np.fromiter((0 if y == C0 else 1 for y in Y), int)
+    # Normalize class labels to be -1 and 1
+    Y = np.fromiter((-1 if y == C0 else 1 for y in Y), int)
 
-    return np.array(X), Y
+    return X, Y.reshape(len(Y), 1)
 
 
 def featureSelection(train, test, targetSize=50):
