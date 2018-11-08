@@ -7,7 +7,31 @@ import sys
 from . import utils
 
 
-def train(x_train, y_train, x_test, y_test, epochs=85, batch_size=128, a=0.0001, prox_const=0.00001):
+def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, prox_const=0.00001):
+    """Training function, better description to come
+
+    Arguments:
+        x_train: ndarray (samplesxfeatures)
+            The training set
+        y_train: ndarray (samplesx1)
+            The labels of the training set
+        x_test: ndarray (samplesxfeatures)
+            The test set
+        y_test: ndarray (samplesx1)
+            The labels of the test set
+        epochs: int, default 100
+            Number of training iterations
+        batch_size: int, default 128
+            Number of samples to process at a time in each epoch
+        a: float, default ______
+            Gradient descent change parameter
+        prox_const: float, default ______
+            Threshold value for soft thresholding
+    
+    Returns
+        w: ndarray (featuresx1)
+        b: float
+    """
     n_samples, n_features = x_train.shape
     
     w = tf.Variable(np.random.rand(n_features, 1).astype(dtype='float64'), name="w")
