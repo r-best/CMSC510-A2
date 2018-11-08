@@ -41,11 +41,14 @@ def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, p
     y = tf.placeholder(dtype=tf.float64, name='y')
 
     predictions = tf.matmul(x, w) + b
-    loss = tf.matmul(tf.matmul(tf.negative(y), tf.transpose(w)), tf.transpose(x))
-    risk = tf.reduce_mean(loss)
+    loss = tf.reduce_mean(
+        tf.log(1 + tf.exp(
+            tf.multiply(-1.0*y, predictions)
+        ))
+    )
 
     optimizer = tf.train.GradientDescentOptimizer(a)
-    train = optimizer.minimize(risk)
+    train = optimizer.minimize(loss)
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -55,7 +58,7 @@ def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, p
                 iE = min(n_samples, i+batch_size)
                 x_batch = x_train[i:iE,:]
                 y_batch = y_train[i:iE,:]
-                sess.run([train,risk,predictions],feed_dict={x: x_batch, y: y_batch})
+                sess.run([train,loss,predictions],feed_dict={x: x_batch, y: y_batch})
             # training done in this epoch
             # but, just so that the user can monitor progress, try current w,b on full test set
             y_pred,curr_w,curr_b=sess.run([predictions,w,b],feed_dict={x: x_test, y: y_test})

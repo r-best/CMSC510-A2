@@ -64,7 +64,7 @@ def preprocess(X, Y, C0, C1):
     X = np.reshape(X, (len(X), len(X[0])**2))
 
     # Normalize sample values to be between 0 and 1
-    # X = [[x/256 for x in sample] for sample in X] # REMOVED, was tanking accuracy
+    X = [[x/256 for x in sample] for sample in X]
     
     # Normalize class labels to be -1 and 1
     Y = np.fromiter((-1 if y == C0 else 1 for y in Y), int)
