@@ -58,11 +58,11 @@ def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, p
                 iE = min(n_samples, i+batch_size)
                 x_batch = x_train[i:iE,:]
                 y_batch = y_train[i:iE,:]
-                sess.run([train,loss,predictions],feed_dict={x: x_batch, y: y_batch})
+                sess.run([train],feed_dict={x: x_batch, y: y_batch})
             # training done in this epoch
             # but, just so that the user can monitor progress, try current w,b on full test set
-            y_pred,curr_w,curr_b=sess.run([predictions,w,b],feed_dict={x: x_test, y: y_test})
-            MSE1=np.mean(np.mean(np.square(y_pred-y_test),axis=1),axis=0)
+            y_pred,curr_loss,curr_w,curr_b=sess.run([predictions,loss,w,b],feed_dict={x: x_test, y: y_test})
+            MSE=np.mean(np.mean(np.square(y_pred-y_test),axis=1),axis=0)
 
             # Soft thresholding
             for i in range(len(curr_w)):
@@ -74,10 +74,8 @@ def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, p
                     curr_w[i][0] = 0
             sess.run([tf.assign(w, curr_w)])
 
-            y_pred,_,_=sess.run([predictions,w,b],feed_dict={x: x_test, y: y_test})
-            MSE2=np.mean(np.mean(np.square(y_pred-y_test),axis=1),axis=0)
-
-            print("{:.2f}   {:.2f}".format(MSE1, MSE2))
+            print("Loss: {:.3f}".format(curr_loss))
+            print("MSE: {:.3f}".format(MSE))
 
     return curr_w, curr_b
 
