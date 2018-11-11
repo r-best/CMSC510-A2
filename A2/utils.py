@@ -1,7 +1,9 @@
 """
 Robert Best
+CMSC 510
+Assignment 2
+Due 11/12/18
 """
-
 import numpy as np
 from sklearn import metrics
 
@@ -91,24 +93,22 @@ def evaluate(labels, gold):
     conf_matrix = metrics.confusion_matrix(gold, labels)
     correct = conf_matrix[0][0]+conf_matrix[1][1] # Total correct is true 0 + true 1
     conf_matrix = [[str(x)+"  " if x <= 9 else str(x)+" " if x <= 99 else str(x) for x in row] for row in conf_matrix]
-    print("---------------------------------------")
-    print("|                        Actual       |")
-    print("|          ---------------------------|")
-    print("|          |     |    0    |     1    |")
-    print("|          |-----+---------+----------|")
-    print("|          |  0  |   {}   |    {}   |".format(conf_matrix[0][0], conf_matrix[0][1]))
-    print("|Predicted |     |         |          |")
-    print("|          |  1  |   {}   |    {}   |".format(conf_matrix[1][0], conf_matrix[1][1]))
-    print("---------------------------------------")
+    print("-----------------------------------------")
+    print("|                         Actual        |")
+    print("|          -----------------------------|")
+    print("|          |      |    -1    |    +1    |")
+    print("|          |------+----------+----------|")
+    print("|          |  -1  |    {}   |    {}   |".format(conf_matrix[0][0], conf_matrix[0][1]))
+    print("|Predicted |      |          |          |")
+    print("|          |  +1  |    {}   |    {}   |".format(conf_matrix[1][0], conf_matrix[1][1]))
+    print("-----------------------------------------")
     
     # Get precision/recall/f-measure for both classes with one method call, thanks scikit-learn!
     precision, recall, fscore, _ = metrics.precision_recall_fscore_support(gold, labels)
-    print("Class 0 Precision: {:.3f}".format(precision[0]))
-    print("Class 0 Recall: {:.3f}".format(recall[0]))
-    print("Class 0 F-Measure: {:.3f}".format(fscore[0]))
-    print("Class 1 Precision: {:.3f}".format(precision[1]))
-    print("Class 1 Recall: {:.3f}".format(recall[1]))
-    print("Class 1 F-Measure: {:.3f}".format(fscore[1]))
+    print("Class -1 Precision: {:.3f}".format(precision[0]))
+    print("Class -1 Recall: {:.3f}".format(recall[0]))
+    print("Class -1 F-Measure: {:.3f}".format(fscore[0]))
+    print("Class +1 Precision: {:.3f}".format(precision[1]))
+    print("Class +1 Recall: {:.3f}".format(recall[1]))
+    print("Class +1 F-Measure: {:.3f}".format(fscore[1]))
     print("Accuracy: {}/{} = {:.3f}%".format(correct, len(gold), correct/len(gold)*100))
-
-    # print("{:.0f}".format(correct/len(gold)*100000))

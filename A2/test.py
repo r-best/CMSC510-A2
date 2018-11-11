@@ -1,3 +1,9 @@
+"""
+Robert Best
+CMSC 510
+Assignment 2
+Due 11/12/18
+"""
 from keras.datasets import mnist
 import tensorflow as tf
 import numpy as np
@@ -7,38 +13,37 @@ import sys
 from . import utils
 
 
-def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, prox_const=0.00001):
-    """Training function, better description to come
+def train(x_train, y_train, epochs=100, batch_size=128, a=0.1, prox_const=0.00001):
+    """Training function, takes in a training set and its labels and uses gradient descent w/
+    logistic loss to calculate feature weights and bias for a classifier
 
     Arguments:
         x_train: ndarray (samplesxfeatures)
             The training set
         y_train: ndarray (samplesx1)
             The labels of the training set
-        x_test: ndarray (samplesxfeatures)
-            The test set
-        y_test: ndarray (samplesx1)
-            The labels of the test set
         epochs: int, default 100
             Number of training iterations
         batch_size: int, default 128
             Number of samples to process at a time in each epoch
-        a: float, default ______
+        a: float, default 0.1
             Gradient descent change parameter
-        prox_const: float, default ______
+        prox_const: float, default 0.00001
             Threshold value for soft thresholding
     
     Returns
         w: ndarray (featuresx1)
+            The calculated feature weights after training
         b: float
+            The calculated bias after training
     """
     n_samples, n_features = x_train.shape
     
-    w = tf.Variable(np.random.rand(n_features, 1).astype(dtype='float64'), name="w")
-    b = tf.Variable(0.0, dtype=tf.float64, name="b")
+    w = tf.Variable(np.random.rand(n_features, 1).astype(dtype='float64'), name="w") # Feature weights (featuresx1)
+    b = tf.Variable(0.0, dtype=tf.float64, name="b") # Bias offset (scalar)
 
-    x = tf.placeholder(dtype=tf.float64, name='x')
-    y = tf.placeholder(dtype=tf.float64, name='y')
+    x = tf.placeholder(dtype=tf.float64, name='x') # Training set (featuresxsamples)
+    y = tf.placeholder(dtype=tf.float64, name='y') # Training set labels (samplesx1)
 
     predictions = tf.matmul(x, w) + b
     loss = tf.reduce_mean(
@@ -47,22 +52,21 @@ def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, p
         ))
     )
 
-    optimizer = tf.train.GradientDescentOptimizer(a)
-    train = optimizer.minimize(loss)
+    train = tf.train.GradientDescentOptimizer(a).minimize(loss)
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
         for _ in range(epochs):
+            # Train model on batches of training set
             for i in range(0,n_samples,batch_size):
                 iE = min(n_samples, i+batch_size)
                 x_batch = x_train[i:iE,:]
                 y_batch = y_train[i:iE,:]
                 sess.run([train],feed_dict={x: x_batch, y: y_batch})
-            # training done in this epoch
-            # but, just so that the user can monitor progress, try current w,b on full test set
-            y_pred,curr_loss,curr_w,curr_b=sess.run([predictions,loss,w,b],feed_dict={x: x_test, y: y_test})
-            MSE=np.mean(np.mean(np.square(y_pred-y_test),axis=1),axis=0)
+
+            # training done in this epoch, get current values of w and b
+            curr_w,curr_b = sess.run([w,b])
 
             # Soft thresholding
             for i in range(len(curr_w)):
@@ -74,13 +78,25 @@ def train(x_train, y_train, x_test, y_test, epochs=100, batch_size=128, a=0.1, p
                     curr_w[i][0] = 0
             sess.run([tf.assign(w, curr_w)])
 
-            print("Loss: {:.3f}".format(curr_loss))
-            print("MSE: {:.3f}".format(MSE))
-
     return curr_w, curr_b
 
 
 def predict(w, b, test):
+    """
+    Uses given feature weights and bias to classify
+    samples in the given test set and yields their labels
+
+    Arguments:
+        w: ndarray (featuresx1)
+            Column matrix of feature weights
+        b: float
+            Y-offset value of classifier line
+        test: ndarray (samplesxfeatures)
+            Test set
+    
+    Yields:
+        Predicted labels for the samples of the test set
+    """
     for item in test:
         item = np.atleast_2d(item)
         u = np.matmul(item,w) + b
@@ -113,7 +129,7 @@ def main(argv):
     y_train_sample = np.array([_ for i, _ in enumerate(y_train) if i in sampleIndicies])
 
     print("Training model...")
-    w, b = train(x_train_sample, y_train_sample, x_test, y_test)
+    w, b = train(x_train_sample, y_train_sample)
 
     print("Evaluating model...")
     labels = predict(w, b, x_test)
