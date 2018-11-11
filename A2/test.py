@@ -2,6 +2,7 @@
 Robert Best
 CMSC 510
 Assignment 2
+Classes 0 and 8
 Due 11/12/18
 """
 from keras.datasets import mnist
